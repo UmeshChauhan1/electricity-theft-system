@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String
+  role          Role     @default(INSPECTOR)
+  phone         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  alerts        Alert[]  @relation("AssignedAlerts")
+  notifications Notification[]
+  
+  @@map("users")
+}
+
+model Region {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  code            String   @unique
+  latitude        Float
+  longitude       Float
+  expectedLoad    Float
+  currentLoad     Float    @default(0)
+  status          RegionStatus @default(NORMAL)
+  lastUpdated     DateTime @default(now())
+  createdAt       DateTime @default(now())
+  
+  meterReadings   MeterReading[]
+  alerts          Alert[]
+  
+  @@map("regions")
+}
+
+model MeterReading {
+  id          String   @id @default(cuid())
+  regionId    String
+  inputKwh    Float
+  outputKwh   Float
+  lossPercent Float
+  timestamp   DateTime @default(now())
+  
+  region      Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  
+  @@index([regionId])
+  @@index([timestamp])
+  @@map("meter_readings")
+}
+
+model Alert {
+  id              String      @id @default(cuid())
+  regionId        String
+  severity        Severity
+  lossPercentage  Float
+  status          AlertStatus @default(PENDING)
+  description     String
+  assignedToId    String?
+  resolvedAt      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  region          Region      @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  assignedTo      User?       @relation("AssignedAlerts", fields: [assignedToId], references: [id])
+  notifications   Notification[]
+  
+  @@index([regionId])
+  @@index([status])
+  @@index([severity])
+  @@map("alerts")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  alertId   String
+  type      NotificationType
+  message   String
+  sentAt    DateTime         @default(now())
+  isRead    Boolean          @default(false)
+  
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alert     Alert            @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([alertId])
+  @@map("notifications")
+}
+
+enum Role {
+  ADMIN
+  INSPECTOR
+  SUB_INSPECTOR
+  DISPATCHER
+  INSTRUCTOR
+}
+
+enum RegionStatus {
+  NORMAL
+  SUSPICIOUS
+  THEFT
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertStatus {
+  PENDING
+  INVESTIGATING
+  DISPATCHED
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  EMAIL
+  WHATSAPP
+  SMS
+  SYSTEM
+}
