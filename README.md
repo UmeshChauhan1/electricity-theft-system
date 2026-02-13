@@ -341,3 +341,4 @@ MIT License - Free to use for your organization
 **Built for Punjab State Power Corporation Ltd (PSPCL)**
 
 🔌 Detecting theft, one watt at a time! ⚡
+# electricity-theft-system
