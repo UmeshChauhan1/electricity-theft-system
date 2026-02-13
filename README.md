@@ -342,3 +342,4 @@ MIT License - Free to use for your organization
 
 🔌 Detecting theft, one watt at a time! ⚡
 # electricity-theft-system
+# electricity-theft-system
