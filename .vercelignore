@@ -1,0 +1,9 @@
+.git
+.gitignore
+README.md
+DEPLOYMENT.md
+VERCEL_SETUP.md
+.env
+.env.local
+.env.example
+.env.production.example
