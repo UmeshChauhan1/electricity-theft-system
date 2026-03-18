@@ -4,7 +4,6 @@
   "description": "Full-stack Electricity Theft Detection & Monitoring System",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
