@@ -1,63 +1,25 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+// "use client" directive to enable client-side rendering
+'use client';
+
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const history = useHistory();
+    const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const handleLogin = () => {
+        // Handle login logic here
+        router.push('/dashboard'); // Redirect to dashboard after login
+    };
 
-      if (!response.ok) {
-        throw new Error('Login failed!');
-      }
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token); // Store JWT in local storage
-      history.push('/dashboard'); // Redirect to dashboard
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Email:</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-          />
+    return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+            <h1 className="text-3xl font-bold mb-4">Login</h1>
+            <input className="mb-4 p-2 border rounded" type="text" placeholder="Username" />
+            <input className="mb-4 p-2 border rounded" type="password" placeholder="Password" />
+            <button className="p-2 bg-blue-500 text-white rounded" onClick={handleLogin}>Login</button>
         </div>
-        <div>
-          <label>Password:</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default LoginPage;
